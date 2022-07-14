@@ -10,8 +10,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   var problem = "0";
-  var small = 30.0;
-  var large = 40.0;
+  var resultSize = 35.0;
+  var problemSize = 55.0;
   var symbol = "";
   var result = "0";
 
@@ -21,6 +21,8 @@ class _HomeScreenState extends State<HomeScreen> {
         problem = "0";
         result = "0";
       } else if (btext == "=") {
+        resultSize = 55;
+        problemSize = 35;
         try {
           var problemExpression = problem;
           problemExpression = problemExpression.replaceAll("x", "*");
@@ -44,6 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
       } else {
         if (problem == "0") {
           problem = btext;
+          if (problem == btext && result != "0") {
+            result = "0";
+            resultSize = 35;
+            problemSize = 55;
+          }
         } else {
           problem = problem + btext;
         }
@@ -64,16 +71,8 @@ class _HomeScreenState extends State<HomeScreen> {
               alignment: Alignment.centerRight,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
-                "History",
-                style: TextStyle(fontSize: small),
-              ),
-            ),
-            Container(
-              alignment: Alignment.centerRight,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Text(
                 result,
-                style: TextStyle(fontSize: small),
+                style: TextStyle(fontSize: resultSize),
               ),
             ),
             SizedBox(
@@ -84,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
                 problem,
-                style: TextStyle(fontSize: large),
+                style: TextStyle(fontSize: problemSize),
               ),
             ),
             Expanded(child: Divider()),
@@ -140,7 +139,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ]),
                       TableRow(children: [
                         myButton("sci", Colors.red),
-                        // 
+                        //
                       ]),
                     ],
                   ),
