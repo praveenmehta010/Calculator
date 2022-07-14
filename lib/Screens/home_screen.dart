@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -8,21 +9,46 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Widget myButton(var btext, var bheight, Color bcolor) {
-    return Container(
-      color: Colors.grey,
-      margin: EdgeInsets.all(2),
-      // padding: EdgeInsets.all(10),
-      height: MediaQuery.of(context).size.height * 0.10 * bheight,
-      child: ElevatedButton(
-          style:
-              ButtonStyle(backgroundColor: MaterialStateProperty.all(bcolor)),
-          onPressed: () {},
-          child: Text(
-            btext,
-            style: TextStyle(fontSize: 40),
-          )),
-    );
+  var problem = "0";
+  var small = 30.0;
+  var large = 40.0;
+  var symbol = "";
+  var result = "0";
+
+  myCalculation(String btext) {
+    setState(() {
+      if (btext == "C") {
+        problem = "0";
+        result = "0";
+      } else if (btext == "=") {
+        try {
+          var problemExpression = problem;
+          problemExpression = problemExpression.replaceAll("x", "*");
+          problemExpression = problemExpression.replaceAll("÷", "/");
+
+          Parser problemString = Parser();
+          Expression expression = problemString.parse(problemExpression);
+          ContextModel contextModel = ContextModel();
+          result = '${expression.evaluate(EvaluationType.REAL, contextModel)}';
+          problem = "0";
+        } catch (e) {
+          result = "Error";
+        }
+      } else if (btext == "⌫") {
+        problem = problem.substring(0, problem.length - 1);
+        if (problem == "") {
+          problem = "0";
+        }
+      } else if (btext == "sci") {
+        result = "Not Working ':) ";
+      } else {
+        if (problem == "0") {
+          problem = btext;
+        } else {
+          problem = problem + btext;
+        }
+      }
+    });
   }
 
   @override
@@ -38,16 +64,27 @@ class _HomeScreenState extends State<HomeScreen> {
               alignment: Alignment.centerRight,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
-                '0',
-                style: TextStyle(fontSize: 30),
+                "History",
+                style: TextStyle(fontSize: small),
               ),
             ),
             Container(
               alignment: Alignment.centerRight,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Text(
-                '0',
-                style: TextStyle(fontSize: 30),
+                result,
+                style: TextStyle(fontSize: small),
+              ),
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            Container(
+              alignment: Alignment.centerRight,
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Text(
+                problem,
+                style: TextStyle(fontSize: large),
               ),
             ),
             Expanded(child: Divider()),
@@ -58,30 +95,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Table(
                     children: [
                       TableRow(children: [
-                        myButton("C", 1, Colors.red),
-                        myButton("⌫", 1, Colors.redAccent),
-                        myButton("÷", 1, Colors.indigoAccent),
+                        myButton("C", Colors.red),
+                        myButton("⌫", Colors.red),
+                        myButton("÷", Colors.indigoAccent),
                       ]),
                       TableRow(children: [
-                        myButton("7", 1, Colors.black87),
-                        myButton("8", 1, Colors.black87),
-                        myButton("9", 1, Colors.black87),
+                        myButton("7", Colors.black87),
+                        myButton("8", Colors.black87),
+                        myButton("9", Colors.black87),
                       ]),
                       TableRow(children: [
-                        myButton("6", 1, Colors.black87),
-                        myButton("5", 1, Colors.black87),
-                        myButton("4", 1, Colors.black87),
+                        myButton("4", Colors.black87),
+                        myButton("5", Colors.black87),
+                        myButton("6", Colors.black87),
                       ]),
                       TableRow(children: [
-                        myButton("3", 1, Colors.black87),
-                        myButton("2", 1, Colors.black87),
-                        myButton("1", 1, Colors.black87),
+                        myButton("1", Colors.black87),
+                        myButton("2", Colors.black87),
+                        myButton("3", Colors.black87),
                       ]),
                       TableRow(children: [
-                        myButton(".", 1, Colors.black87),
-                        myButton("0", 1, Colors.black87),
-                        myButton("00", 1, Colors.black87),
-                      ])
+                        myButton(".", Colors.black87),
+                        myButton("0", Colors.black87),
+                        myButton("00", Colors.black87),
+                      ]),
                     ],
                   ),
                 ),
@@ -90,19 +127,20 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Table(
                     children: [
                       TableRow(children: [
-                        myButton("x", 1, Colors.indigoAccent),
+                        myButton("x", Colors.indigoAccent),
                       ]),
                       TableRow(children: [
-                        myButton("+", 1, Colors.indigoAccent),
+                        myButton("+", Colors.indigoAccent),
                       ]),
                       TableRow(children: [
-                        myButton("-", 1, Colors.indigoAccent),
+                        myButton("-", Colors.indigoAccent),
                       ]),
                       TableRow(children: [
-                        myButton("%", 1, Colors.indigoAccent),
+                        myButton("=", Colors.red),
                       ]),
                       TableRow(children: [
-                        myButton("=", 1, Colors.red),
+                        myButton("sci", Colors.red),
+                        // 
                       ]),
                     ],
                   ),
@@ -112,6 +150,23 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  myButton(var btext, Color bcolor) {
+    return Container(
+      color: Colors.grey,
+      margin: EdgeInsets.all(2),
+      // padding: EdgeInsets.all(10),
+      height: MediaQuery.of(context).size.height * 0.10,
+      child: ElevatedButton(
+          style:
+              ButtonStyle(backgroundColor: MaterialStateProperty.all(bcolor)),
+          onPressed: () => myCalculation(btext),
+          child: Text(
+            btext,
+            style: TextStyle(fontSize: 40),
+          )),
     );
   }
 }
